@@ -1,0 +1,27 @@
+{
+  "name": "website",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "svelte-kit dev",
+    "build": "svelte-kit build",
+    "package": "svelte-kit package",
+    "preview": "svelte-kit preview",
+    "prepare": "svelte-kit sync",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "next",
+    "@sveltejs/kit": "next",
+    "@svelteuidev/actions": "^0.6.2",
+    "@svelteuidev/core": "^0.6.2",
+    "less": "^4.1.2",
+    "svelte": "^3.44.0",
+    "svelte-check": "^2.2.6",
+    "svelte-loading-spinners": "^0.1.7",
+    "svelte-preprocess": "^4.10.1",
+    "tslib": "^2.3.1",
+    "typescript": "~4.6.2"
+  },
+  "type": "module"
+}
