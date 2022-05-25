@@ -241,8 +241,8 @@
 <main>
     <section class="tab-container">
         <header>
-            <button on:click={_ => currentTab = "signin"} style="border-color: {currentTab == "signin" ? "#303030" : "transparent"}" >Sign in</button>
-            <button on:click={_ => currentTab = "signup"} style="border-color: {currentTab == "signup" ? "#303030" : "transparent"}" >Sign up</button>
+            <button on:click={_ => { if (!isAuthLoading) currentTab = "signin" }} style="border-color: {currentTab == "signin" ? "#303030" : "transparent"}" >Sign in</button>
+            <button on:click={_ => { if (!isAuthLoading) currentTab = "signup" }} style="border-color: {currentTab == "signup" ? "#303030" : "transparent"}" >Sign up</button>
         </header>
         {#if currentTab == "signin"}
             <section class="tab" id="sign-in">
