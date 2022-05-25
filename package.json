@@ -15,7 +15,11 @@
     "@sveltejs/kit": "next",
     "@svelteuidev/actions": "^0.6.2",
     "@svelteuidev/core": "^0.6.2",
+    "@types/cookie": "^0.5.1",
+    "cookie": "^0.5.0",
     "less": "^4.1.2",
+    "node-fetch": "^3.2.4",
+    "radix-icons-svelte": "^1.2.1",
     "svelte": "^3.44.0",
     "svelte-check": "^2.2.6",
     "svelte-loading-spinners": "^0.1.7",
@@ -23,5 +27,8 @@
     "tslib": "^2.3.1",
     "typescript": "~4.6.2"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^1.35.3"
+  }
 }
