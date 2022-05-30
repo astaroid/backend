@@ -1,10 +1,28 @@
 <script lang="ts">
-    import { page } from '$app/stores'
+    import { page, session as SESSION } from '$app/stores'
     import { Checkbox } from '@svelteuidev/core'
     import { Stretch, Circle } from "svelte-loading-spinners"
     import { goto } from '$app/navigation'
+    import { browser } from "$app/env"
 
     let currentTab:"signin"|"signup"
+
+    let session = $SESSION
+
+    let theme:"dark"|"light"|"system" = "system"
+
+    if (Object(session).user) {
+        theme = Object(session).user.theme
+    }
+
+    if (browser) {
+        theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+        window
+	        .matchMedia("(prefers-color-scheme: dark)")
+            .addEventListener("change", (e) => {
+                theme = e.matches ? "dark" : "light"
+            })
+    }
 
     if ($page.url.searchParams.has("type")) {
         let searchParamsTypeValue = $page.url.searchParams.get("type")
@@ -238,11 +256,11 @@
         {currentTab == "signin" ? "Sign in" : "Sign up"} | Astaroid
     </title>
 </svelte:head>
-<main>
+<main class={ theme == "dark" ? "dark" : theme == "light" ? "light" : void 0 }>
     <section class="tab-container">
         <header>
-            <button on:click={_ => { if (!isAuthLoading) currentTab = "signin" }} style="border-color: {currentTab == "signin" ? "#303030" : "transparent"}" >Sign in</button>
-            <button on:click={_ => { if (!isAuthLoading) currentTab = "signup" }} style="border-color: {currentTab == "signup" ? "#303030" : "transparent"}" >Sign up</button>
+            <button on:click={_ => { if (!isAuthLoading) currentTab = "signin" }} style="border-color: {currentTab == "signin" ? theme == "dark" ? "white" : "#303030" : "transparent"}" >Sign in</button>
+            <button on:click={_ => { if (!isAuthLoading) currentTab = "signup" }} style="border-color: {currentTab == "signup" ? theme == "dark" ? "white" : "#303030" : "transparent"}" >Sign up</button>
         </header>
         {#if currentTab == "signin"}
             <section class="tab" id="sign-in">
@@ -361,16 +379,17 @@
                     border-radius: 5px;
                     color: white;
                     font-weight: bold;
-                    background-color: #303030;
+                    background-color: lighten(#06d6a0, 2%);
                     display: flex;
                     flex-direction: column;
                     align-items: center;
                     flex-wrap: nowrap;
                     &:hover {
-                        background-color: #424242;
+                        background-color: darken(#06d6a0, 3.275%);
                     }
                     &:disabled {
-                        background-color: lighten(#303030, 15%);
+                        cursor: no-drop;
+                        background-color: lighten(#06d6a0, 5.275%);
                     }
                 }
                 p[data-type="error-message"] {
@@ -456,6 +475,150 @@
             @media only screen and (min-width: 1200px) {
                 width: 420px;
                 height: 490px;
+            }
+        }
+
+        &.dark {
+            background-color: #181818;
+            section.tab-container {
+                border-color: rgb(60, 60, 60);
+                background-color: #212121;
+                header {
+                    background-color: lighten(#212121, 3.75%);
+                    border-color: rgb(60, 60, 60);
+                    box-shadow: none;
+                    button {
+                        color: white;
+                    }
+                }
+                section.tab {
+                    input[data-type="text"], 
+                    input[data-type="text-error"] {
+                        border-color: rgb(150, 150, 150);
+                        color: rgb(220, 220, 220);
+                        background-color: transparent;
+                    }
+
+                    a {
+                        color: rgb(230, 230, 230);
+                    }
+
+                    &#sign-up div[data-type="policy-container"] span {
+                        color: rgb(230, 230, 230);
+                    }
+                }
+            }
+        }
+        &.light {
+            background-color: #eeeeee;
+            section.tab-container {
+                background-color: white;
+                border-color: #d6d6d6;
+                header {
+                    background-color: #fafafa;
+                    border-color: #d6d6d6;
+                    box-shadow: 0px 2px 1px 0px #f5f5f5;
+                    button {
+                        color: #303030;
+                    }
+                }
+                section.tab {
+                    input[data-type="text"], 
+                    input[data-type="text-error"] {
+                        color: black;
+                        border-color: #bdbdbd;
+                        background-color: transparent;
+                    }
+
+                    a {
+                        color: #424242;
+                    }
+
+                    &#sign-up div[data-type="policy-container"] span {
+                        color: #616161;
+                    }
+                }
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            & {
+                background-color: #181818;
+                section.tab-container {
+                    border-color: rgb(50, 50, 50);
+                    background-color: #212121;
+                    header {
+                        background-color: lighten(#212121, 3.75%);
+                        border-style: solid;
+                        border-color: rgb(50, 50, 50);
+                        box-shadow: 0px 2px 1px 0px #272727;
+                        button {
+                            color: white;
+                        }
+                    }
+                    section.tab {
+                        input[data-type="text"], 
+                        input[data-type="text-error"] {
+                            border-color: rgb(150, 150, 150);
+                            color: rgb(220, 220, 220);
+                            background-color: transparent;
+
+                            &:focus {
+                                border-color: #2196f3;
+                                box-shadow: 0 0 1.5px 0px #2196f3;
+                            }
+                        }
+
+                        a {
+                            color: rgb(230, 230, 230);
+                            &:link {
+                                outline: none;
+                            }
+                        }
+
+                        &#sign-up {
+                            div[data-type="policy-container"] {
+                                span {
+                                    color: rgb(230, 230, 230);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            & {
+                background-color: #eeeeee;
+                section.tab-container {
+                    background-color: white;
+                    border-color: #d6d6d6;
+                    header {
+                        background-color: #fafafa;
+                        border-color: #d6d6d6;
+                        box-shadow: 0px 2px 1px 0px #f5f5f5;
+                        button {
+                            color: #303030;
+                        }
+                    }
+                    section.tab {
+                        input[data-type="text"], 
+                        input[data-type="text-error"] {
+                            color: black;
+                            border-color: #bdbdbd;
+                            background-color: transparent;
+                        }
+
+                        a {
+                            color: #424242;
+                        }
+
+                        &#sign-up div[data-type="policy-container"] span {
+                            color: #616161;
+                        }
+                    }
+                }
             }
         }
     }
