@@ -5,8 +5,6 @@
 
     export let theme:"dark"|"light" = "light"
 
-    export let page:string = "home"
-
     let self:HTMLElement|null = null
 
     let screenSize = "lg"
@@ -18,7 +16,7 @@
 <main bind:this={self} class={ theme == "dark" ? "dark" : "light" }>
     <ExclamationTriangle size={ screenSize == "lg" ? 140 : 120 } color={ theme == "dark" ? "white" : "#303030" } />
     <span>No connection</span>
-    <Button size={ screenSize == "lg" ? "md" : "sm" } href={`/${page}`} variant="outline" override={{
+    <Button size={ screenSize == "lg" ? "md" : "sm" } href="/app" variant="outline" override={{
         color: theme == "dark" ? "White" : "Black",
         borderColor: theme == "dark" ? "White" : "Black",
         "&:hover": {
