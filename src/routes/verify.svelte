@@ -2,11 +2,34 @@
     import { Stretch } from "svelte-loading-spinners"
     import { ExclamationTriangle } from "radix-icons-svelte"
     import { Button } from '@svelteuidev/core'
-    import { page } from "$app/stores"
+    import { page, session as SESSION } from "$app/stores"
     import supabaseClient from "$lib/utils/supabaseClient"
     import { goto } from '$app/navigation'
+    import { browser } from "$app/env"
 
     let title = "Loading..."
+
+    let session = $SESSION
+
+    let self:HTMLElement|null = null
+
+    let screenSize = "lg"
+
+    let theme:"dark"|"light"|"system" = "system"
+
+    if (Object(session).user) {
+        theme = Object(session).user.theme
+    }
+
+    if (browser) {
+        theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+        if (self) screenSize = getComputedStyle(self).getPropertyValue("--screen-size")
+        window
+	        .matchMedia("(prefers-color-scheme: dark)")
+            .addEventListener("change", (e) => {
+                theme = e.matches ? "dark" : "light"
+            })
+    }
 
     let hasError = false
 
@@ -97,21 +120,27 @@
 <svelte:head>
     <title>{title} { title == "Loading..." ? "": !hasError ? "| Astaroid" : "Error" }</title>
 </svelte:head>
-<main>
+<main bind:this={self} class={ theme == "dark" ? "dark" : theme == "light" ? "light" : void 0 }>
     {#if !hasError }
-        <Stretch color="#303030" unit="px" size={150} />
+        <Stretch color={ theme == "dark" ? "white" : "#303030" } unit="px" size={150} />
     {:else}
-        <ExclamationTriangle color="rgb(220, 0, 0)" size={130} />
+        <ExclamationTriangle size={ screenSize == "lg" ? 140 : 120 } color={ theme == "dark" ? "white" : "#303030" } />
         <span class="error-msg">{title} error</span>
-        <Button href="/" variant="outline" color="gray">
+        <Button size={ screenSize == "lg" ? "md" : "sm" } href="/" variant="outline" override={{
+            color: theme == "dark" ? "White" : "Black",
+            borderColor: theme == "dark" ? "White" : "Black",
+            "&:hover": {
+                backgroundColor: "transparent"
+            }
+        }}>
             Go back home
         </Button>
     {/if}
 </main>
 <style lang="less">
     main {
+        --screen-size: lg;
         overflow: hidden;
-        background-color: #eeeeee;
         position: fixed;
         height: 100%;
         width: 100%;
@@ -127,6 +156,23 @@
             text-transform: capitalize;
             padding-top: 5px;
             margin-bottom: 10px;
+        }
+        &.dark {
+            background-color: #181818;
+            span {
+                color: white;
+            }
+        }
+        &.light {
+            background-color: #eeeeee;
+            span {
+                color: black;
+            }
+        }
+        @media only screen and (max-width: 480px) {
+            & {
+                --screen-size: sm;
+            }
         }
     }
 </style>
