@@ -12,6 +12,8 @@ export async function post(event:RequestEvent): Promise<RequestHandlerOutput> {
         maxAge: 31557600 
     }
 
+    body.user.theme = "system"
+
     const headers = {
         "Set-Cookie": serialize(
             "session", 

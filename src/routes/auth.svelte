@@ -1,10 +1,30 @@
 <script lang="ts">
-    import { page } from '$app/stores'
+    import { page, session as SESSION } from '$app/stores'
     import { Checkbox } from '@svelteuidev/core'
     import { Stretch, Circle } from "svelte-loading-spinners"
     import { goto } from '$app/navigation'
+    import { browser } from "$app/env"
 
     let currentTab:"signin"|"signup"
+
+    let session = $SESSION
+
+    let theme:"dark"|"light"|"system" = "system"
+
+    if (Object(session).user) {
+        theme = Object(session).user.theme
+    }
+
+    if (browser) {
+        if (theme == "system")
+            theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+        
+        window
+	        .matchMedia("(prefers-color-scheme: dark)")
+            .addEventListener("change", (e) => {
+                theme = e.matches ? "dark" : "light"
+            })
+    }
 
     if ($page.url.searchParams.has("type")) {
         let searchParamsTypeValue = $page.url.searchParams.get("type")
@@ -238,11 +258,11 @@
         {currentTab == "signin" ? "Sign in" : "Sign up"} | Astaroid
     </title>
 </svelte:head>
-<main>
+<main class="auth-page" id={ theme == "dark" ? "dark" : theme == "light" ? "light" : void 0 }>
     <section class="tab-container">
         <header>
-            <button on:click={_ => { if (!isAuthLoading) currentTab = "signin" }} style="border-color: {currentTab == "signin" ? "#303030" : "transparent"}" >Sign in</button>
-            <button on:click={_ => { if (!isAuthLoading) currentTab = "signup" }} style="border-color: {currentTab == "signup" ? "#303030" : "transparent"}" >Sign up</button>
+            <button on:click={_ => { if (!isAuthLoading) currentTab = "signin" }} style="border-color: {currentTab == "signin" ? theme == "dark" ? "white" : "#303030" : "transparent"}" >Sign in</button>
+            <button on:click={_ => { if (!isAuthLoading) currentTab = "signup" }} style="border-color: {currentTab == "signup" ? theme == "dark" ? "white" : "#303030" : "transparent"}" >Sign up</button>
         </header>
         {#if currentTab == "signin"}
             <section class="tab" id="sign-in">
@@ -300,163 +320,3 @@
         
     </section>
 </main>
-<style lang="less">
-    main {
-        overflow: hidden;
-        background-color: #eeeeee;
-        height: 100%;
-        width: 100%;
-        position: fixed;
-        display: flex;
-        flex-direction: column;
-        align-content: center;
-        justify-content: center;
-        align-items: center;
-        flex-wrap: nowrap;
-        section.tab-container {
-            background-color: white;
-            width: 340px;
-            height: 490px;
-            padding: 0 0 0 0;
-            border-style: solid;
-            border-width: 1px;
-            border-color: #d6d6d6;
-            header {
-                width: 100%;
-                height: 70px;
-                background-color: #fafafa;
-                border-style: solid;
-                border-width: 0 0 1px 0;
-                border-color: #d6d6d6;
-                box-shadow: 0px 2px 1px 0px #f5f5f5;
-                display: flex;
-                button {
-                    height: 100%;
-                    width: 50%;
-                    font-size: 19px;
-                    background-color: transparent;
-                    border-color: transparent;
-                    border-style: solid;
-                    border-width: 0px;
-                    border-bottom-width: 3px;
-                    font-weight: bold;
-                    color: #303030;
-                    &:focus {
-                        outline: none;
-                    }
-                }
-            }
-            section.tab {
-                width: calc(100% - 45px);
-                height: calc(100% - 70px);
-                padding: 22.5px;
-                button {
-                    width: calc(100%);
-                    margin-bottom: 20px;
-                    font-size: 17px;
-                    padding: 12px;
-                    outline: none;
-                    height: 45px;
-                    border-width: 0;
-                    border-radius: 5px;
-                    color: white;
-                    font-weight: bold;
-                    background-color: #303030;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    flex-wrap: nowrap;
-                    &:hover {
-                        background-color: #424242;
-                    }
-                    &:disabled {
-                        background-color: lighten(#303030, 15%);
-                    }
-                }
-                p[data-type="error-message"] {
-                    margin: -5px 0 0 0;
-                    padding: 0 0 13px 3px;
-                    font-size: 15.5px;
-                    color: rgb(245, 0, 0);
-                    font-family: Arial, Helvetica, sans-serif;
-                }
-                input[data-type="text"], 
-                input[data-type="text-error"] {
-                    width: calc(100% - 24px);
-                    margin-bottom: 20px;
-                    font-size: 15px;
-                    padding: 12px;
-                    outline: none;
-                    height: 20px;
-                    border-width: 1px;
-                    border-style: solid;
-                    border-radius: 5px;
-                    border-color: #bdbdbd;
-                    &:focus {
-                        outline: none;
-                        border-color: #2196f3;
-                        box-shadow: 0 0 1.5px 0px #2196f3;
-                    }
-                }
-                input[data-type="text-error"] {
-                    box-shadow: 0 0 1.5px 0px red;
-                    border-color: red;
-                }
-                a {
-                    color: #424242;
-                    &:link {
-                        outline: none;
-                    }
-                }
-                &#sign-in {
-                    div[data-type="magic-link-container"] {
-                        display: flex;
-                        margin-bottom: 15px;
-                        font-family: Arial, Helvetica, sans-serif;
-                        font-size: 15.5px; 
-                        justify-content: flex-end;
-                        a {
-                            text-decoration: none;
-                            &:hover {
-                                text-decoration: underline;
-                            }
-                        }
-                    }
-                }
-                &#sign-up {
-                    div[data-type="policy-container"] {
-                        display: flex;
-                        margin-bottom: 15px;
-                        span {
-                            color: #616161;
-                            padding-top: 2px;
-                            padding-left: 8px;
-                            font-family: Arial, Helvetica, sans-serif;
-                            font-size: 15.5px; 
-                        }
-                    }
-                }
-            }
-            @media only screen and (max-width: 480px) {
-                width: 100%;
-                height: 100%;
-            }
-            @media only screen and (min-width : 768px) and (max-width : 978px) {
-                width: 340px;
-                height: 490px;
-            }
-            @media only screen and (min-width: 979px) and (max-width : 1023px) {
-                width: 360px;
-                height: 490px;
-            }
-            @media only screen and (min-width: 1024px) and (max-width : 1119px) {
-                width: 400px;
-                height: 490px;
-            }
-            @media only screen and (min-width: 1200px) {
-                width: 420px;
-                height: 490px;
-            }
-        }
-    }
-</style>
