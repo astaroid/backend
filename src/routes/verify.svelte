@@ -22,7 +22,8 @@
     }
 
     if (browser) {
-        theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+        if (theme == "system")
+            theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
         if (self) screenSize = getComputedStyle(self).getPropertyValue("--screen-size")
         window
 	        .matchMedia("(prefers-color-scheme: dark)")
