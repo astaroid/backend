@@ -260,6 +260,26 @@
             }
         }
 
+        @media only screen and (min-width: 481px) and (max-width: 750px) {
+            & {
+                width: 65px;
+                section.bottom-nav-bar {
+                    width: 100%;
+                    img {
+                        margin-left: 2.5px;
+                    }
+                }
+                section button {
+                    padding: 13px;
+                    align-items: center;
+                    
+                    span {
+                        display: none;
+                    }
+                }
+            }
+        }
+
         @media only screen and (min-width: 992px) {
             & {
                 width: 230px;
