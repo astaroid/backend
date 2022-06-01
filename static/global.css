@@ -112,7 +112,7 @@ main.auth-page section.tab-container section.tab button:hover {
 
 main.auth-page section.tab-container section.tab button:disabled {
   cursor: no-drop;
-  background-color: #07f0b4;
+  background-color: #06aa81;
 }
 
 main.auth-page section.tab-container section.tab p[data-type="error-message"] {
@@ -242,7 +242,6 @@ main.auth-page#dark section.tab-container header button {
 
 main.auth-page#dark section.tab-container section.tab input[data-type="text"],
 main.auth-page#dark section.tab-container section.tab input[data-type="text-error"] {
-  border-color: #969696;
   color: #dcdcdc;
   background-color: transparent;
 }
@@ -277,7 +276,6 @@ main.auth-page#light section.tab-container header button {
 main.auth-page#light section.tab-container section.tab input[data-type="text"],
 main.auth-page#light section.tab-container section.tab input[data-type="text-error"] {
   color: black;
-  border-color: #bdbdbd;
   background-color: transparent;
 }
 
