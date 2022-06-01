@@ -112,7 +112,7 @@ main.auth-page section.tab-container section.tab button:hover {
 
 main.auth-page section.tab-container section.tab button:disabled {
   cursor: no-drop;
-  background-color: #07f0b4;
+  background-color: #06aa81;
 }
 
 main.auth-page section.tab-container section.tab p[data-type="error-message"] {
