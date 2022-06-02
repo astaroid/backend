@@ -1,6 +1,10 @@
 <script lang="ts">
     import { Stretch } from "svelte-loading-spinners"
 
+    const {
+        VITE_API_KEY
+    } = import.meta.env
+
     export let email:string
 
     export let id:string
@@ -9,7 +13,7 @@
 
     const verify = () => {
         isLoading = true
-        fetch("/api/auth/confirm-email", {
+        fetch(`/api/auth/confirm-email?api_key=${VITE_API_KEY}`, {
             method: 'post',
             body: JSON.stringify({
                 id

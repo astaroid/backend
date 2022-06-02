@@ -5,6 +5,10 @@
     import { goto } from '$app/navigation'
     import { browser } from "$app/env"
 
+    const {
+        VITE_API_KEY
+    } = import.meta.env
+
     let currentTab:"signin"|"signup"
 
     let session = $SESSION
@@ -86,7 +90,7 @@
         } 
 
         if (isUsernameOrEmailVerify) {
-            let res = await fetch("/api/auth/magic-link", {
+            let res = await fetch(`/api/auth/magic-link?api_key=${VITE_API_KEY}`, {
                 method: 'post',
                 body: JSON.stringify({
                     email: usernameOrEmail
@@ -119,7 +123,7 @@
             isPasswordVerify = false
         }
         if (isUsernameOrEmailVerify && isPasswordVerify) {
-            let res = await fetch("/api/auth/signin", {
+            let res = await fetch(`/api/auth/signin?api_key=${VITE_API_KEY}`, {
                 method: 'post',
                 body: JSON.stringify({
                     usernameOrEmail,
@@ -206,7 +210,7 @@
 
         
         if (hasAgree && isEmailVerify && isPasswordVerify && isUsernameVerify) {
-            let res = await fetch("/api/auth/signup", {
+            let res = await fetch(`/api/auth/signup?api_key=${VITE_API_KEY}`, {
                 method: 'post',
                 body: JSON.stringify({
                     email,
@@ -278,7 +282,7 @@
                     {#if !isMagicLinkRequest }
                         <a on:click={onMagicLink} href="/api/auth/magic-link">Send magic link</a>
                     {:else}
-                        <Circle unit="px" size={15} color="#303030" />
+                        <Circle unit="px" size={15} color={ theme == "dark" ? "white" : "#303030" } />
                     {/if}
                     
                 </div>
