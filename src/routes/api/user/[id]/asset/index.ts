@@ -19,6 +19,7 @@ export async function get({ params, url }:RequestEvent): Promise<RequestHandlerO
                 .from("assets")
                 .select("id, user_id, volume, color")
                 .eq("user_id", userId)
+                .gt("volume", 0)
             if (color) {
                 let colorList = color.split(".")
                 let colorQueryText = String()
