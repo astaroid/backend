@@ -2,8 +2,10 @@ import supabaseClient from "$lib/utils/supabaseClient"
 import { Temporal } from "@js-temporal/polyfill"
 import type { RequestHandlerOutput } from "@sveltejs/kit"
 import type { RequestEvent } from "@sveltejs/kit/types/internal"
+import fetch from "node-fetch"
 
 const {
+    VITE_ADMIN_KEY,
     VITE_API_KEY
 } = import.meta.env
 
@@ -77,6 +79,8 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                                     .limit(1)
                                     .single()
                                 if (newAsset) {
+                                    if (rpcBuyCrystalFuncParameter._total_market_cap > 10)
+                                        fetch(`${url.protocol}//${url.host}/api/market?admin_key=${VITE_ADMIN_KEY}`,  { method: "POST" }).catch(null)
                                     return {
                                         status: 200,
                                         body: newAsset
