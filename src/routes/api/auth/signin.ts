@@ -36,7 +36,7 @@ export async function post({ url, request }:RequestEvent): Promise<RequestHandle
                 return {
                     status: 400,
                     body: {
-                        code: 400,
+                        code: 205,
                         message: "Incorrect password"
                     }
                 }
@@ -45,8 +45,8 @@ export async function post({ url, request }:RequestEvent): Promise<RequestHandle
             return {
                 status: 400,
                 body: {
-                    code: 400,
-                    message: "Username or email doesn't exist"
+                    code: 204,
+                    message: "Username or email not found"
                 }
             }
         }
@@ -54,7 +54,7 @@ export async function post({ url, request }:RequestEvent): Promise<RequestHandle
         return {
             status: 400,
             body: {
-                code: 400,
+                code: 102,
                 message: "Incorrect api key"
             }
         }

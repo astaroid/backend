@@ -17,11 +17,11 @@ export async function get({ params, url }:RequestEvent): Promise<RequestHandlerO
         if (userChecker.data) {
             let query = supabaseClient
                 .from("assets")
-                .select("id, user_id, volume, color")
+                .select("id,volume,color")
                 .eq("user_id", userId)
                 .gt("volume", 0)
             if (color) {
-                let colorList = color.split(".")
+                let colorList = color.split(",")
                 let colorQueryText = String()
                 colorList.forEach((color, index) => {
                     colorQueryText = colorQueryText.concat( index == 0 ? `color.eq.${color.toUpperCase()}` : `,color.eq.${color.toUpperCase()}` )
@@ -40,7 +40,7 @@ export async function get({ params, url }:RequestEvent): Promise<RequestHandlerO
                 return {
                     status: 400,
                     body: {
-                        code: 400,
+                        code: 104,
                         message: "Backend error"
                     }
                 }
@@ -49,7 +49,7 @@ export async function get({ params, url }:RequestEvent): Promise<RequestHandlerO
             return {
                 status: 400,
                 body: {
-                    code: 400,
+                    code: 106,
                     message: "User not found"
                 }
             }
@@ -59,7 +59,7 @@ export async function get({ params, url }:RequestEvent): Promise<RequestHandlerO
         return {
             status: 400,
             body: {
-                code: 400,
+                code: 102,
                 message: "Incorrect api key"
             }
         }

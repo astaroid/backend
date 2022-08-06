@@ -29,7 +29,7 @@ export async function post({ request, url }:RequestEvent): Promise<RequestHandle
             return {
                 status: 400,
                 body: {
-                    code: 400,
+                    code: 201,
                     message: "Email already exist"
                 }
             }
@@ -45,7 +45,7 @@ export async function post({ request, url }:RequestEvent): Promise<RequestHandle
             return {
                 status: 400,
                 body: {
-                    code: 400,
+                    code: 202,
                     message: "Username already exist"
                 }
             }
@@ -77,7 +77,7 @@ export async function post({ request, url }:RequestEvent): Promise<RequestHandle
                 return {
                     status: 400,
                     body: {
-                        code: 400,
+                        code: 104,
                         message: "Backend error"
                     }
                 }
@@ -87,7 +87,7 @@ export async function post({ request, url }:RequestEvent): Promise<RequestHandle
         return {
             status: 400,
             body: {
-                code: 400,
+                code: 104,
                 message: "Backend error"
             }
         }
@@ -95,7 +95,7 @@ export async function post({ request, url }:RequestEvent): Promise<RequestHandle
         return {
             status: 400,
             body: {
-                code: 400,
+                code: 102,
                 message: "Incorrect api key"
             }
         }

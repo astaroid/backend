@@ -12,83 +12,62 @@ export async function post({ params, request, url }:RequestEvent): Promise<Reque
     if (apiKey == VITE_API_KEY) {
         let id = params.id
         let body = await request.json()
-        let hasError = false
-        let errorMessageList = Array<string>()
+        let updatedUserMetadata:{ [name:string]: any } = {}
+        updatedUserMetadata.user_metadata = {}
 
-        body.user_metadata = {}
-
-        let idChecker = await supabaseClient
-            .from("users")
-            .select("*")
-            .eq("id", id)
+        let { data, error: E } = await supabaseClient
+            .rpc("check_user_data", { _user_id: id, _user_metadata: { email: body.email, username: body.username } })
             .limit(1)
             .single()
-        if (idChecker.data) {
-            if (body.username) {
-                let { data } = await supabaseClient
-                    .from("users")
-                    .select("id")
-                    .eq("username", body.username)
-                    .limit(1)
-                    .single() 
-                if (data) {
-                    if (data.id != id) {
-                        delete body.username
-                        hasError = true
-                        errorMessageList.push("Username already exist")
-                    }
-                } else {
-                    body.user_metadata.username = body.username
-                    delete body.username
+
+        if (data) {
+            if ("error" in data) {
+                if (data.error.code == 201)
+                    updatedUserMetadata.user_metadata.username = body.username
+                if (data.error.code == 202) {
+                    updatedUserMetadata.user_metadata.email_confirm = false
+                    updatedUserMetadata.email = body.email
                 }
-            }
-        
-            if (body.email) {
-                let { data } = await supabaseClient
-                    .from("users")
-                    .select("id")
-                    .eq("email", body.email)
-                    .limit(1)
-                    .single() 
-                if (data) {
-                    if (data.id != id) {
-                        delete body.email
-                        hasError = true
-                        errorMessageList.push("Email already exist")
-                    } 
-                } else {
-                    body.user_metadata.email_confirm = false
-                }
-            }
-        
-            if (body.password) {     
-                body.user_metadata.password = body.password
-            }
-        
-            let { data } = await supabaseClient.auth.api.updateUserById( id, body )
-        
-            if (hasError) {
-                return {
-                    status: 400,
-                    body: {
-                        code: 400,
-                        message: errorMessageList
+                if (data.error.code == 106) {
+                    return {
+                        status: 400,
+                        body: {
+                            user: null,
+                            error: data.error
+                        }
                     }
                 }
-            } else if (data) {
+            } else {
+                if ("username" in  body)
+                    updatedUserMetadata.user_metadata.username = body.username
+                if ("email" in  body) {
+                    updatedUserMetadata.user_metadata.email_confirm = false 
+                    updatedUserMetadata.email = body.email
+                }
+            }
+
+            if (body.password)   
+                updatedUserMetadata.user_metadata.password = body.password
+
+            let { data: user, error } = await supabaseClient.auth.api.updateUserById( id, updatedUserMetadata )
+
+            if (user) {
                 return {
                     status: 200,
                     body: {
-                        email: data.email,
-                        password: data.user_metadata.password,
-                        username: data.user_metadata.username
+                        user: {
+                            email: user.email,
+                            password: user.user_metadata.password,
+                            username: user.user_metadata.username
+                        },
+                        error: null
                     }
                 } 
             } else {
                 return {
                     status: 400,
                     body: {
-                        code: 400,
+                        code: 104,
                         message: "Backend error"
                     }
                 }
@@ -97,8 +76,8 @@ export async function post({ params, request, url }:RequestEvent): Promise<Reque
             return {
                 status: 400,
                 body: {
-                    code: 400,
-                    message: "User not found"
+                    code: 104,
+                    message: "Backend error"
                 }
             }
         }
@@ -106,7 +85,7 @@ export async function post({ params, request, url }:RequestEvent): Promise<Reque
         return {
             status: 400,
             body: {
-                code: 400,
+                code: 102,
                 message: "Incorrect api key"
             }
         }
@@ -135,7 +114,7 @@ export async function get({ params, url }:RequestEvent): Promise<RequestHandlerO
             return {
                 status: 400,
                 body: {
-                    code: 400,
+                    code: 106,
                     message: "User not found"
                 }
             }
@@ -144,7 +123,7 @@ export async function get({ params, url }:RequestEvent): Promise<RequestHandlerO
         return {
             status: 400,
             body: {
-                code: 400,
+                code: 102,
                 message: "Incorrect api key"
             }
         }
@@ -173,7 +152,7 @@ export async function del({ params, url }:RequestEvent): Promise<RequestHandlerO
                 return {
                     status: 400,
                     body: {
-                        code: 400,
+                        code: 104,
                         message: "Backend error"
                     }
                 }
@@ -182,7 +161,7 @@ export async function del({ params, url }:RequestEvent): Promise<RequestHandlerO
             return {
                 status: 400,
                 body: {
-                    code: 400,
+                    code: 106,
                     message: "User not found"
                 }
             }
@@ -191,7 +170,7 @@ export async function del({ params, url }:RequestEvent): Promise<RequestHandlerO
         return {
             status: 400,
             body: {
-                code: 400,
+                code: 102,
                 message: "Incorrect api key"
             }
         }

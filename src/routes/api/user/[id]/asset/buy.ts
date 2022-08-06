@@ -89,7 +89,7 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                                     return {
                                         status: 400,
                                         body: {
-                                            code: 400,
+                                            code: 104,
                                             message: "Backend error"
                                         }
                                     }        
@@ -99,7 +99,7 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                                     status: 400,
                                     body: {
                                         message: "Insufficient coins", 
-                                        code: 400
+                                        code: 206
                                     }
                                 }
                             }
@@ -108,7 +108,7 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                                 status: 400,
                                 body: {
                                     message: "Crystal not found", 
-                                    code: 400
+                                    code: 212
                                 }
                             }
                         }
@@ -116,7 +116,7 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                         return {
                             status: 400,
                             body: {
-                                code: 400,
+                                code: 212,
                                 message: "Crystal not found"
                             }
                         }
@@ -131,7 +131,7 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                 return {
                     status: 400,
                     body: {
-                        code: 400,
+                        code: 104,
                         message: "Backend error"
                     }
                 }
@@ -141,7 +141,7 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
             return {
                 status: 400,
                 body: {
-                    code: 400,
+                    code: 211,
                     message: "Crystal id required"
                 }
             }
@@ -151,7 +151,7 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
         return {
             status: 400,
             body: {
-                code: 400,
+                code: 102,
                 message: "Incorrect api key"
             }
         }
