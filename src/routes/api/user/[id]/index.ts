@@ -88,7 +88,7 @@ export async function post({ params, request, url }:RequestEvent): Promise<Reque
                 return {
                     status: 400,
                     body: {
-                        code: 400,
+                        code: 104,
                         message: "Backend error"
                     }
                 }
@@ -97,7 +97,7 @@ export async function post({ params, request, url }:RequestEvent): Promise<Reque
             return {
                 status: 400,
                 body: {
-                    code: 400,
+                    code: 106,
                     message: "User not found"
                 }
             }
@@ -106,7 +106,7 @@ export async function post({ params, request, url }:RequestEvent): Promise<Reque
         return {
             status: 400,
             body: {
-                code: 400,
+                code: 102,
                 message: "Incorrect api key"
             }
         }
@@ -135,7 +135,7 @@ export async function get({ params, url }:RequestEvent): Promise<RequestHandlerO
             return {
                 status: 400,
                 body: {
-                    code: 400,
+                    code: 106,
                     message: "User not found"
                 }
             }
@@ -144,7 +144,7 @@ export async function get({ params, url }:RequestEvent): Promise<RequestHandlerO
         return {
             status: 400,
             body: {
-                code: 400,
+                code: 102,
                 message: "Incorrect api key"
             }
         }
@@ -173,7 +173,7 @@ export async function del({ params, url }:RequestEvent): Promise<RequestHandlerO
                 return {
                     status: 400,
                     body: {
-                        code: 400,
+                        code: 104,
                         message: "Backend error"
                     }
                 }
@@ -182,7 +182,7 @@ export async function del({ params, url }:RequestEvent): Promise<RequestHandlerO
             return {
                 status: 400,
                 body: {
-                    code: 400,
+                    code: 106,
                     message: "User not found"
                 }
             }
@@ -191,7 +191,7 @@ export async function del({ params, url }:RequestEvent): Promise<RequestHandlerO
         return {
             status: 400,
             body: {
-                code: 400,
+                code: 102,
                 message: "Incorrect api key"
             }
         }
