@@ -1,6 +1,7 @@
 {
-  "name": "website",
+  "name": "astaroid-backend",
   "version": "1.0.0",
+  "private": true,
   "scripts": {
     "dev": "svelte-kit dev",
     "build": "svelte-kit build",
