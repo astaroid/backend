@@ -47,7 +47,7 @@ export async function get({ url }:RequestEvent) {
     if (apiKey == VITE_API_KEY) {
         let query = supabaseClient
             .from<{ id:string, color:string, rarest:number, price:number, crystal_market_cap:number }>("market")
-            .select("color,price,rarest,crystal_market_cap")
+            .select("id,color,price,rarest,crystal_market_cap")
         let search = url.searchParams.get("search")
         let order = url.searchParams.get("order") as "asc-price"|"asc-rarest"|"desc-price"|"desc-rarest"
         
@@ -104,7 +104,7 @@ export async function get({ url }:RequestEvent) {
             return {
                 status: 400,
                 body: {
-                    code: 400,
+                    code: 104,
                     message: "Backend error"
                 }
             }
@@ -113,7 +113,7 @@ export async function get({ url }:RequestEvent) {
         return {
             status: 400,
             body: {
-                code: 400,
+                code: 102,
                 message: "Incorrect api key"
             }
         }
@@ -216,7 +216,7 @@ export async function post({ url }:RequestEvent): Promise<RequestHandlerOutput> 
                     return {
                         status: 400,
                         body: {
-                            code: 400,
+                            code: 104,
                             message: "Backend error"
                         }
                     }
@@ -226,7 +226,7 @@ export async function post({ url }:RequestEvent): Promise<RequestHandlerOutput> 
             return {
                 status: 400,
                 body: {
-                    code: 400,
+                    code: 104,
                     message: "Backend error"
                 }
             }
@@ -235,7 +235,7 @@ export async function post({ url }:RequestEvent): Promise<RequestHandlerOutput> 
         return {
             status: 400,
             body: {
-                code: 400,
+                code: 100,
                 message: "Incorrect admin key"
             }
         }

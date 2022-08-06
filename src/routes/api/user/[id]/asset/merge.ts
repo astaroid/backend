@@ -52,15 +52,15 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                             return {
                                 status: 400,
                                 body: {
-                                    code: 400,
-                                    message: "Assets don't exist"
+                                    code: 208,
+                                    message: "Asset not found"
                                 } 
                             }
                         } else if (colorsToMerge.length == 1) {
                             return {
                                 status: 400,
                                 body: {
-                                    code: 400,
+                                    code: 210,
                                     message: "2 or more assets required"
                                 } 
                             }
@@ -93,7 +93,7 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                                 return {
                                     status: 400,
                                     body: {
-                                        code: 400,
+                                        code: 104,
                                         message: "Backend error"
                                     }
                                 }
@@ -102,7 +102,7 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                             return {
                                 status: 400,
                                 body: {
-                                    code: 400,
+                                    code: 209,
                                     message: "Assets required"
                                 } 
                             }
@@ -111,8 +111,8 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                         return {
                             status: 400,
                             body: {
-                                code: 400,
-                                message: "Assets don't exist"
+                                code: 208,
+                                message: "Asset not found"
                             } 
                         }
                     }
@@ -126,7 +126,7 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                 return {
                     status: 400,
                     body: {
-                        code: 400,
+                        code: 104,
                         message: "Backend error"
                     }
                 }
@@ -135,7 +135,7 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
             return {
                 status: 400,
                 body: {
-                    code: 400,
+                    code: 209,
                     message: "Assets required"
                 } 
             }
@@ -144,7 +144,7 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
         return {
             status: 400,
             body: {
-                code: 400,
+                code: 102,
                 message: "Incorrect api key"
             }
         }

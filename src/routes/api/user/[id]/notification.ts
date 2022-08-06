@@ -34,7 +34,7 @@ export async function get({ url, params }:RequestEvent): Promise<RequestHandlerO
             return {
                 status: 400,
                 body: {
-                    code: 400,
+                    code: 104,
                     message: "Backend error"
                 }
             }
@@ -43,7 +43,7 @@ export async function get({ url, params }:RequestEvent): Promise<RequestHandlerO
         return {
             status: 400,
             body: {
-                code: 400,
+                code: 102,
                 message: "Incorrect api key"
             }
         }
@@ -74,8 +74,8 @@ export async function post({ url, params }:RequestEvent): Promise<RequestHandler
                         return {
                             status: 400,
                             body: {
-                                code: 400,
-                                message: "Notification don't exist"
+                                code: 214,
+                                message: "Notification not found"
                             } 
                         }
                     }
@@ -92,7 +92,7 @@ export async function post({ url, params }:RequestEvent): Promise<RequestHandler
                 return {
                     status: 400,
                     body: {
-                        code: 400,
+                        code: 104,
                         message: "Backend error"
                     }
                 }
@@ -101,7 +101,7 @@ export async function post({ url, params }:RequestEvent): Promise<RequestHandler
             return {
                 status: 400,
                 body: {
-                    code: 400,
+                    code: 213,
                     message: "Notification id required"
                 }
             }
@@ -110,7 +110,7 @@ export async function post({ url, params }:RequestEvent): Promise<RequestHandler
         return {
             status: 400,
             body: {
-                code: 400,
+                code: 102,
                 message: "Incorrect api key"
             }
         }
@@ -140,8 +140,8 @@ export async function del({ url, params }:RequestEvent): Promise<RequestHandlerO
                         return {
                             status: 400,
                             body: {
-                                code: 400,
-                                message: "Notification don't exist"
+                                code: 214,
+                                message: "Notification not found"
                             } 
                         }
                     }
@@ -158,7 +158,7 @@ export async function del({ url, params }:RequestEvent): Promise<RequestHandlerO
                 return {
                     status: 400,
                     body: {
-                        code: 400,
+                        code: 104,
                         message: "Backend error"
                     }
                 }
@@ -167,7 +167,7 @@ export async function del({ url, params }:RequestEvent): Promise<RequestHandlerO
             return {
                 status: 400,
                 body: {
-                    code: 400,
+                    code: 213,
                     message: "Notification id required"
                 }
             }
@@ -176,7 +176,7 @@ export async function del({ url, params }:RequestEvent): Promise<RequestHandlerO
         return {
             status: 400,
             body: {
-                code: 400,
+                code: 102,
                 message: "Incorrect api key"
             }
         }

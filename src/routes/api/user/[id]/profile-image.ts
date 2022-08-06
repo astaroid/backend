@@ -39,7 +39,7 @@ export async function post({ params, request, url }:RequestEvent): Promise<Reque
                     return {
                         status: 400,
                         body: {
-                            code: 400,
+                            code: 104,
                             message: "Backend error"
                         }
                     }
@@ -48,7 +48,7 @@ export async function post({ params, request, url }:RequestEvent): Promise<Reque
                 return {
                     status: 400,
                     body: {
-                        code: 400,
+                        code: 104,
                         message: "Backend error"
                     }
                 }
@@ -57,7 +57,7 @@ export async function post({ params, request, url }:RequestEvent): Promise<Reque
             return {
                 status: 400,
                 body: {
-                    code: 400,
+                    code: 104,
                     message: "Backend error"
                 }
             }
@@ -67,7 +67,7 @@ export async function post({ params, request, url }:RequestEvent): Promise<Reque
         return {
             status: 400,
             body: {
-                code: 400,
+                code: 102,
                 message: "Incorrect api key"
             }
         }

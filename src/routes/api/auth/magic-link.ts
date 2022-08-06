@@ -34,7 +34,7 @@ export async function post({ url, request }:RequestEvent): Promise<RequestHandle
         return {
             status: 400,
             body: {
-                code: 400,
+                code: 102,
                 message: "Incorrect api key"
             }
         }
