@@ -64,7 +64,7 @@ To install astaroid-backend, first clone the [repo](https://github.com/astaroid/
 git clone https://github.com/astaroid/backend.git
 ```
 
-or [download](https://github.com/astaroid/backend/releases/tag/1.0.0-stable) the compressed file.
+or download the compressed file [here](https://github.com/astaroid/backend/releases/tag/v1.0.0).
 
 Secondly install all required dependencies with `npm install`  (or `pnpm install` or `yarn install`).
 
