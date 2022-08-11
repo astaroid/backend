@@ -19,23 +19,32 @@ export async function get({ url, params }:RequestEvent): Promise<RequestHandlerO
             if ("data" in data)  {
                 return {
                     status: 200,
-                    body: data.data 
+                    body: {
+                        data: data.data,
+                        error: null,
+                        ok: true
+                    }
                 }
             } else {
                 return {
                     status: 400,
                     body: {
-                        code: 400,
-                        message: data.error
-                    } 
+                        data: null,
+                        error: data.error,
+                        ok: false
+                    }
                 }
             }
         } else {
             return {
                 status: 400,
                 body: {
-                    code: 104,
-                    message: "Backend error"
+                    data: null,
+                    error: {
+                        code: 104,
+                        message: "Backend error"
+                    },
+                    ok: false
                 }
             }
         }
@@ -43,8 +52,12 @@ export async function get({ url, params }:RequestEvent): Promise<RequestHandlerO
         return {
             status: 400,
             body: {
-                code: 102,
-                message: "Incorrect api key"
+                data: null,
+                error: {
+                    code: 102,
+                    message: "Incorrect api key"
+                },
+                ok: false
             }
         }
     }
@@ -68,23 +81,32 @@ export async function post({ url, params }:RequestEvent): Promise<RequestHandler
                     if (notification) {
                         return {
                             status: 200,
-                            body: data.data
+                            body: {
+                                data: notification,
+                                error: null,
+                                ok: true
+                            }
                         }
                     } else {
                         return {
                             status: 400,
                             body: {
-                                code: 214,
-                                message: "Notification not found"
-                            } 
+                                data: null,
+                                error: {
+                                    code: 214,
+                                    message: "Notification not found"
+                                },
+                                ok: false
+                            }
                         }
                     }
                 } else {
                     return {
                         status: 400,
                         body: {
-                            code: 400,
-                            message: data.error
+                            data: null,
+                            error: data.error,
+                            ok: false
                         } 
                     }
                 }
@@ -92,8 +114,12 @@ export async function post({ url, params }:RequestEvent): Promise<RequestHandler
                 return {
                     status: 400,
                     body: {
-                        code: 104,
-                        message: "Backend error"
+                        data: null,
+                        error: {
+                            code: 104,
+                            message: "Backend error"
+                        },
+                        ok: false
                     }
                 }
             }
@@ -101,8 +127,12 @@ export async function post({ url, params }:RequestEvent): Promise<RequestHandler
             return {
                 status: 400,
                 body: {
-                    code: 213,
-                    message: "Notification id required"
+                    data: null,
+                    error: {
+                        code: 213,
+                        message: "Notification id required"
+                    },
+                    ok: false
                 }
             }
         }
@@ -110,8 +140,12 @@ export async function post({ url, params }:RequestEvent): Promise<RequestHandler
         return {
             status: 400,
             body: {
-                code: 102,
-                message: "Incorrect api key"
+                data: null,
+                error: {
+                    code: 102,
+                    message: "Incorrect api key"
+                },
+                ok: false
             }
         }
     }
@@ -134,32 +168,45 @@ export async function del({ url, params }:RequestEvent): Promise<RequestHandlerO
                     if (notification) {
                         return {
                             status: 200,
-                            body: data.data
+                            body: {
+                                data: notification,
+                                error: null,
+                                ok: true
+                            }
                         }
                     } else {
                         return {
                             status: 400,
                             body: {
-                                code: 214,
-                                message: "Notification not found"
-                            } 
+                                data: null,
+                                error: {
+                                    code: 214,
+                                    message: "Notification not found"
+                                },
+                                ok: false
+                            }
                         }
                     }
                 } else {
                     return {
                         status: 400,
                         body: {
-                            code: 400,
-                            message: data.error
-                        } 
+                            data: null,
+                            error: data.error,
+                            ok: false
+                        }
                     }
                 }
             } else {
                 return {
                     status: 400,
                     body: {
-                        code: 104,
-                        message: "Backend error"
+                        data: null,
+                        error: {
+                            code: 104,
+                            message: "Backend error"
+                        },
+                        ok: false
                     }
                 }
             }
@@ -167,8 +214,12 @@ export async function del({ url, params }:RequestEvent): Promise<RequestHandlerO
             return {
                 status: 400,
                 body: {
-                    code: 213,
-                    message: "Notification id required"
+                    data: null,
+                    error: {
+                        code: 213,
+                        message: "Notification id required"
+                    },
+                    ok: false
                 }
             }
         }
@@ -176,8 +227,12 @@ export async function del({ url, params }:RequestEvent): Promise<RequestHandlerO
         return {
             status: 400,
             body: {
-                code: 102,
-                message: "Incorrect api key"
+                data: null,
+                error: {
+                    code: 102,
+                    message: "Incorrect api key"
+                },
+                ok: false
             }
         }
     }

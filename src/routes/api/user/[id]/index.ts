@@ -15,12 +15,13 @@ export async function post({ params, request, url }:RequestEvent): Promise<Reque
         let updatedUserMetadata:{ [name:string]: any } = {}
         updatedUserMetadata.user_metadata = {}
 
-        let { data, error: E } = await supabaseClient
+        let { data } = await supabaseClient
             .rpc("check_user_data", { _user_id: id, _user_metadata: { email: body.email, username: body.username } })
             .limit(1)
             .single()
-
         if (data) {
+            const userData = data.data
+            const userError = data.error
             if ("error" in data) {
                 if (data.error.code == 201)
                     updatedUserMetadata.user_metadata.username = body.username
@@ -32,8 +33,9 @@ export async function post({ params, request, url }:RequestEvent): Promise<Reque
                     return {
                         status: 400,
                         body: {
-                            user: null,
-                            error: data.error
+                            data: null,
+                            error: data.error,
+                            ok: false
                         }
                     }
                 }
@@ -49,26 +51,32 @@ export async function post({ params, request, url }:RequestEvent): Promise<Reque
             if (body.password)   
                 updatedUserMetadata.user_metadata.password = body.password
 
-            let { data: user, error } = await supabaseClient.auth.api.updateUserById( id, updatedUserMetadata )
+            let { data: user } = await supabaseClient.auth.api.updateUserById( id, updatedUserMetadata )
 
             if (user) {
                 return {
                     status: 200,
                     body: {
-                        user: {
+                        data: {
+                            ...userData,
                             email: user.email,
                             password: user.user_metadata.password,
                             username: user.user_metadata.username
                         },
-                        error: null
+                        error: userError ? userError : null,
+                        ok: userError ? false : true
                     }
                 } 
             } else {
                 return {
                     status: 400,
                     body: {
-                        code: 104,
-                        message: "Backend error"
+                        data: null,
+                        error: {
+                            code: 104,
+                            message: "Backend error"
+                        },
+                        ok: false
                     }
                 }
             }
@@ -76,8 +84,12 @@ export async function post({ params, request, url }:RequestEvent): Promise<Reque
             return {
                 status: 400,
                 body: {
-                    code: 104,
-                    message: "Backend error"
+                    data: null,
+                    error: {
+                        code: 104,
+                        message: "Backend error"
+                    },
+                    ok: false
                 }
             }
         }
@@ -85,8 +97,12 @@ export async function post({ params, request, url }:RequestEvent): Promise<Reque
         return {
             status: 400,
             body: {
-                code: 102,
-                message: "Incorrect api key"
+                data: null,
+                error: {
+                    code: 102,
+                    message: "Incorrect api key"
+                },
+                ok: false
             }
         }
     }
@@ -108,14 +124,22 @@ export async function get({ params, url }:RequestEvent): Promise<RequestHandlerO
         if (data) {
             return {
                 status: 200,
-                body: data
+                body: {
+                    data: data,
+                    error: null,
+                    ok: true
+                }
             }
         } else {
             return {
                 status: 400,
                 body: {
-                    code: 106,
-                    message: "User not found"
+                    data: null,
+                    error: {
+                        code: 106,
+                        message: "User not found"
+                    },
+                    ok: false
                 }
             }
         }
@@ -123,8 +147,12 @@ export async function get({ params, url }:RequestEvent): Promise<RequestHandlerO
         return {
             status: 400,
             body: {
-                code: 102,
-                message: "Incorrect api key"
+                data: null,
+                error: {
+                    code: 102,
+                    message: "Incorrect api key"
+                },
+                ok: false
             }
         }
     }
@@ -146,14 +174,23 @@ export async function del({ params, url }:RequestEvent): Promise<RequestHandlerO
             let { error } = await supabaseClient.auth.api.deleteUser(id) 
             if (!error) {
                 return {
-                    status: 200
+                    status: 200,
+                    body: {
+                        data: null,
+                        error: null,
+                        ok: true
+                    }
                 }
             } else {
                 return {
                     status: 400,
                     body: {
-                        code: 104,
-                        message: "Backend error"
+                        data: null,
+                        error: {
+                            code: 104,
+                            message: "Backend error"
+                        },
+                        ok: false
                     }
                 }
             }
@@ -161,8 +198,12 @@ export async function del({ params, url }:RequestEvent): Promise<RequestHandlerO
             return {
                 status: 400,
                 body: {
-                    code: 106,
-                    message: "User not found"
+                    data: null,
+                    error: {
+                        code: 106,
+                        message: "User not found"
+                    },
+                    ok: false
                 }
             }
         }
@@ -170,8 +211,12 @@ export async function del({ params, url }:RequestEvent): Promise<RequestHandlerO
         return {
             status: 400,
             body: {
-                code: 102,
-                message: "Incorrect api key"
+                data: null,
+                error: {
+                    code: 102,
+                    message: "Incorrect api key"
+                },
+                ok: false
             }
         }
     }

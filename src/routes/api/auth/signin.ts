@@ -26,18 +26,24 @@ export async function post({ url, request }:RequestEvent): Promise<RequestHandle
                 return {
                     status: 200,
                     body: {
-                        user: {
+                        data: {
                             id: data.id,
                             verify: data.email_confirm
-                        }
+                        },
+                        error: null,
+                        ok: true
                     }
                 }
             } else {
                 return {
                     status: 400,
                     body: {
-                        code: 205,
-                        message: "Incorrect password"
+                        data: null,
+                        error: {
+                            code: 205,
+                            message: "Incorrect password"
+                        },
+                        ok: false
                     }
                 }
             }
@@ -45,8 +51,12 @@ export async function post({ url, request }:RequestEvent): Promise<RequestHandle
             return {
                 status: 400,
                 body: {
-                    code: 204,
-                    message: "Username or email not found"
+                    data: null,
+                    error: {
+                        code: 204,
+                        message: "Username or email not found"
+                    },
+                    ok: false
                 }
             }
         }
@@ -54,8 +64,12 @@ export async function post({ url, request }:RequestEvent): Promise<RequestHandle
         return {
             status: 400,
             body: {
-                code: 102,
-                message: "Incorrect api key"
+                data: null,
+                error: {
+                    code: 102,
+                    message: "Incorrect api key"
+                },
+                ok: false
             }
         }
     }

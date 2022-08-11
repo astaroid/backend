@@ -3,8 +3,8 @@
     export async function load(e:any) {
       return {
         props: {
-            status: e.status,
-            path: e.url.pathname,
+          status: e.status,
+          path: e.url.pathname,
         }
       };
     }

@@ -48,64 +48,94 @@ export async function get({ url }:RequestEvent) {
         let query = supabaseClient
             .from<{ id:string, color:string, rarest:number, price:number, crystal_market_cap:number }>("market")
             .select("id,color,price,rarest,crystal_market_cap")
-        let search = url.searchParams.get("search")
-        let order = url.searchParams.get("order") as "asc-price"|"asc-rarest"|"desc-price"|"desc-rarest"
-        
-        if (search) {
-            let searchList = search.split(",")
-            let searchQuery = {
-                color: String(),
-                price: String(),
-                rarest: String()
-            }
-            searchList.forEach(searchValue => {
-                let [searchType, searchRange] = searchValue.split(":")
-                if (searchType && searchRange) {
-                    searchType = searchType.toLowerCase()
-                    if (searchType == "color") {
-                        searchRange = searchRange.toLowerCase()
-                        searchQuery.color = searchQuery.color == "" ? `color.eq.${searchRange}` : searchQuery.color.concat(`,color.eq.${searchRange}`)
-                    } else if (searchType == "price") {
-                        let price = parseFloat(searchRange)
-                        searchQuery.price = searchQuery.price == "" ? `price.eq.${price}` : searchQuery.price.concat(`,price.eq.${price}`)
-                    } else if (searchType == "rarest") {
-                        let rarest = parseFloat(searchRange)
-                        searchQuery.rarest = searchQuery.rarest == "" ? `rarest.eq.${rarest}` : searchQuery.rarest.concat(`,rarest.eq.${rarest}`)
-                    }
-                }
-            })
-            let searchQueryGroup = searchQuery.color ? searchQuery.color : ""
-            searchQueryGroup = searchQuery.price ? searchQueryGroup.concat(`,or(${searchQuery.price})`) : searchQueryGroup.concat("")
-            searchQueryGroup = searchQuery.rarest ? searchQueryGroup.concat(`,or(${searchQuery.rarest})`) : searchQueryGroup.concat("")
-            if (searchQueryGroup)
-                query = query.or(searchQueryGroup)
+ 
+        let searchQuery = {
+            color: String(),
+            price: String(),
+            rarest: String()
         }
 
+        let priceSearch = url.searchParams.get("price")
+        let rarestSearch = url.searchParams.get("rarest")
+        let colorSearch = url.searchParams.get("color")
+        let order = url.searchParams.get("order") as "asc-price"|"asc-rarest"|"desc-price"|"desc-rarest"
+
+        if (colorSearch) {
+            let colorSearchList = colorSearch.split(",")
+
+            colorSearchList.forEach(searchRange => {
+                searchRange = searchRange.toLowerCase()
+                searchQuery.color = searchQuery.color == "" ? `color.eq.${searchRange}` : searchQuery.color.concat(`,color.eq.${searchRange}`)
+            })
+        }
+        
+        if (priceSearch) {
+            let priceSearchList = priceSearch.split(",")
+
+            priceSearchList.forEach(searchRange => {
+                let price = parseFloat(searchRange)
+                searchQuery.price = searchQuery.price == "" ? `price.eq.${price}` : searchQuery.price.concat(`,price.eq.${price}`)
+            })
+        }
+
+        if (rarestSearch) {
+            let rarestSearchList = rarestSearch.split(",")
+
+            rarestSearchList.forEach(searchRange => {
+                let rarest = parseFloat(searchRange)
+                searchQuery.rarest = searchQuery.rarest == "" ? `rarest.eq.${rarest}` : searchQuery.rarest.concat(`,rarest.eq.${rarest}`)
+            })
+        }
+
+        let searchQueryGroup:string = String()
+
+        if (searchQuery.color)
+            searchQueryGroup = searchQueryGroup.concat(`${searchQuery.color}`)
+
+        if (searchQuery.price)
+            searchQueryGroup = searchQueryGroup ? searchQueryGroup.concat(`,and(${searchQuery.price})`) : searchQueryGroup.concat(`${searchQuery.price}`)
+
+        if (searchQuery.rarest)
+            searchQueryGroup = searchQueryGroup ? searchQueryGroup.concat(`,and(${searchQuery.rarest})`) : searchQueryGroup.concat(`${searchQuery.rarest}`)
+
+        if (searchQueryGroup)
+            query = query.or(searchQueryGroup)
+
         if (order) {
+            order = order.toLocaleLowerCase() as any
             if (order == "asc-price")
-                query = query.order("color", { ascending: true })
+                query = query.order("price", { ascending: true })
             else if (order == "desc-price")
-                query = query.order("color", { ascending: false })
+                query = query.order("price", { ascending: false })
             else if (order == "asc-rarest")
-                query = query.order("color", { ascending: true })
+                query = query.order("rarest", { ascending: true })
             else if (order == "desc-rarest")
-                query = query.order("color", { ascending: false })
+                query = query.order("rarest", { ascending: false })
         }
 
         query = query.gt("crystal_market_cap", 0)
         
         let { data, error } = await query
+
         if (!error) {
             return {
                 status: 200,
-                body: JSON.stringify(data)
+                body: {
+                    data: data,
+                    error: null,
+                    ok: true
+                }
             }
         } else {
             return {
                 status: 400,
                 body: {
-                    code: 104,
-                    message: "Backend error"
+                    data: null,
+                    error: {
+                        code: 104,
+                        message: "Backend error"
+                    },
+                    ok: false
                 }
             }
         }
@@ -113,8 +143,12 @@ export async function get({ url }:RequestEvent) {
         return {
             status: 400,
             body: {
-                code: 102,
-                message: "Incorrect api key"
+                data: null,
+                error: {
+                    code: 102,
+                    message: "Incorrect api key"
+                },
+                ok: false
             }
         }
     }
@@ -155,9 +189,29 @@ export async function post({ url }:RequestEvent): Promise<RequestHandlerOutput> 
                     rarest: _rarest,
                     sellers_metadata: _sellers_metadata
                 } = crystalData
-                await supabaseClient.rpc("create_crystal", { action: "update", _color, _crystal_market_cap, _id, _price, _rarest, _sellers_metadata, _total_market_cap})
+                let crystalCreated =  await supabaseClient.rpc("create_crystal", { action: "update", _color, _crystal_market_cap, _id, _price, _rarest, _sellers_metadata, _total_market_cap})
+                if (crystalCreated.error) {
+                    return {
+                        status: 400,
+                        body: {
+                            data: null,
+                            error: {
+                                code: 104,
+                                message: "Backend error"
+                            },
+                            ok: false
+                        }
+                    }
+                    
+                }
+
                 return {
-                    status: 200
+                    status: 200,
+                    body: {
+                        data: null,
+                        error: null,
+                        ok: true
+                    }
                 }
             } else {
                 let firstRecord = await supabaseClient
@@ -190,7 +244,30 @@ export async function post({ url }:RequestEvent): Promise<RequestHandlerOutput> 
                             rarest: _rarest,
                             sellers_metadata: _sellers_metadata
                         } = newCrystal
-                        await supabaseClient.rpc("create_crystal", { action: "insert", _id: nilV4, _color, _crystal_market_cap, _price, _rarest, _sellers_metadata, _total_market_cap})
+                        let crystalCreated = await supabaseClient.rpc("create_crystal", { action: "insert", _id: nilV4, _color, _crystal_market_cap, _price, _rarest, _sellers_metadata, _total_market_cap})
+                        if (crystalCreated.error) {
+                            return {
+                                status: 400,
+                                body: {
+                                    data: null,
+                                    error: {
+                                        code: 104,
+                                        message: "Backend error"
+                                    },
+                                    ok: false
+                                }
+                            }
+                            
+                        }
+        
+                        return {
+                            status: 200,
+                            body: {
+                                data: null,
+                                error: null,
+                                ok: true
+                            }
+                        }
                     } else {
                         let newCrystal:MarketTableRecord = {
                             color:pickedColor,
@@ -205,19 +282,43 @@ export async function post({ url }:RequestEvent): Promise<RequestHandlerOutput> 
                                 sold_at: Temporal.Now.zonedDateTimeISO().toString()
                             }]
                         }
-                        await supabaseClient
+                        let crystalCreated = await supabaseClient
                             .from("market")
                             .insert(newCrystal)
-                    }
-                    return {
-                        status: 200
+                        if (crystalCreated.error) {
+                            return {
+                                status: 400,
+                                body: {
+                                    data: null,
+                                    error: {
+                                        code: 104,
+                                        message: "Backend error"
+                                    },
+                                    ok: false
+                                }
+                            }
+                            
+                        }
+            
+                        return {
+                            status: 200,
+                            body: {
+                                data: null,
+                                error: null,
+                                ok: true
+                            }
+                        }
                     }
                 } else {
                     return {
                         status: 400,
                         body: {
-                            code: 104,
-                            message: "Backend error"
+                            data: null,
+                            error: {
+                                code: 104,
+                                message: "Backend error"
+                            },
+                            ok: false
                         }
                     }
                 }
@@ -226,8 +327,12 @@ export async function post({ url }:RequestEvent): Promise<RequestHandlerOutput> 
             return {
                 status: 400,
                 body: {
-                    code: 104,
-                    message: "Backend error"
+                    data: null,
+                    error: {
+                        code: 104,
+                        message: "Backend error"
+                    },
+                    ok: false
                 }
             }
         }
@@ -235,8 +340,12 @@ export async function post({ url }:RequestEvent): Promise<RequestHandlerOutput> 
         return {
             status: 400,
             body: {
-                code: 100,
-                message: "Incorrect admin key"
+                data: null,
+                error: {
+                    code: 100,
+                    message: "Incorrect admin key"
+                },
+                ok: false
             }
         }
     }

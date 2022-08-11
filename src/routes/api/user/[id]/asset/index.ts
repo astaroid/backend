@@ -17,15 +17,16 @@ export async function get({ params, url }:RequestEvent): Promise<RequestHandlerO
         if (userChecker.data) {
             let query = supabaseClient
                 .from("assets")
-                .select("id,volume,color")
+                .select("id,volume,color,user_id")
                 .eq("user_id", userId)
                 .gt("volume", 0)
             if (color) {
                 let colorList = color.split(",")
                 let colorQueryText = String()
                 colorList.forEach((color, index) => {
-                    colorQueryText = colorQueryText.concat( index == 0 ? `color.eq.${color.toUpperCase()}` : `,color.eq.${color.toUpperCase()}` )
+                    colorQueryText = colorQueryText.concat( index == 0 ? `color.eq.${color.toLowerCase()}` : `,color.eq.${color.toLowerCase()}` )
                 })
+                
                 if (colorQueryText)
                     query = query.or(colorQueryText)
             }
@@ -34,14 +35,22 @@ export async function get({ params, url }:RequestEvent): Promise<RequestHandlerO
             if (assets) {
                 return {
                     status: 200,
-                    body: assets
+                    body: {
+                        data: assets,
+                        error: null,
+                        ok: true
+                    }
                 }
             } else {
                 return {
                     status: 400,
                     body: {
-                        code: 104,
-                        message: "Backend error"
+                        data: null,
+                        error: {
+                            code: 104,
+                            message: "Backend error"
+                        },
+                        ok: false
                     }
                 }
             }
@@ -49,8 +58,12 @@ export async function get({ params, url }:RequestEvent): Promise<RequestHandlerO
             return {
                 status: 400,
                 body: {
-                    code: 106,
-                    message: "User not found"
+                    data: null,
+                    error: {
+                        code: 106,
+                        message: "User not found"
+                    },
+                    ok: false
                 }
             }
         } 
@@ -59,8 +72,12 @@ export async function get({ params, url }:RequestEvent): Promise<RequestHandlerO
         return {
             status: 400,
             body: {
-                code: 102,
-                message: "Incorrect api key"
+                data: null,
+                error: {
+                    code: 102,
+                    message: "Incorrect api key"
+                },
+                ok: false
             }
         }
     }
