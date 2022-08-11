@@ -801,4 +801,4 @@ Astaroid-backend return the following error messages when there is a bad request
 
 ## License
 
-[GPL-3.0](https://github.com/astaroid/website/blob/main/LICENSE)
+[MIT](https://github.com/astaroid/backend/blob/main/LICENSE.md)
