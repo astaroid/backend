@@ -16,42 +16,42 @@ export async function post({ request, url }:RequestEvent): Promise<RequestHandle
             username 
         } = await request.json() as { email:string, username:string, password:string }
     
-        let isEmailVerify = true, 
-            isUsernameVerify = true
+        let isUserVerify = true
         
-        let supabaseEmailVerify = await supabaseClient
-            .from("users")
-            .select("email")
-            .eq("email", email)
+        let supabaseUserVerifier = await supabaseClient
+            .rpc("check_signup_data", { _email: email, _username: username })
+            .limit(1)
             .single()
-        if (supabaseEmailVerify.data) {
-            isEmailVerify = false
+
+        if (!supabaseUserVerifier.error) {
+            
+            if ("error" in supabaseUserVerifier.data) {
+                isUserVerify = false
+                let error = supabaseUserVerifier.data.error
+                return {
+                    status: 400,
+                    body: {
+                        data: null,
+                        error,
+                        ok: false
+                    }
+                }
+            }
+        } else {
             return {
                 status: 400,
                 body: {
-                    code: 201,
-                    message: "Email already exist"
+                    data: null,
+                    error: {
+                        code: 104,
+                        message: "Backend error"
+                    },
+                    ok: false
                 }
             }
         }
     
-        let supabaseUsernameVerify = await supabaseClient
-            .from("users")
-            .select("username")
-            .eq("username", username)
-            .single()
-        if (supabaseUsernameVerify.data) {
-            isUsernameVerify = false
-            return {
-                status: 400,
-                body: {
-                    code: 202,
-                    message: "Username already exist"
-                }
-            }
-        }
-    
-        if (isEmailVerify && isUsernameVerify) {
+        if (isUserVerify) {
             const { user } = await supabaseClient.auth.api.createUser({
                 email_confirm: true,
                 email,
@@ -67,18 +67,24 @@ export async function post({ request, url }:RequestEvent): Promise<RequestHandle
                 return {
                     status: 200,
                     body: {
-                        user: {
+                        data: {
                             id: user.id,
                             verify: user.user_metadata.email_confirm
-                        }
+                        },
+                        error: null,
+                        ok: true
                     }
                 }
             } else {
                 return {
                     status: 400,
                     body: {
-                        code: 104,
-                        message: "Backend error"
+                        data: null,
+                        error: {
+                            code: 104,
+                            message: "Backend error"
+                        },
+                        ok: false
                     }
                 }
             }
@@ -87,16 +93,24 @@ export async function post({ request, url }:RequestEvent): Promise<RequestHandle
         return {
             status: 400,
             body: {
-                code: 104,
-                message: "Backend error"
+                data: null,
+                error: {
+                    code: 104,
+                    message: "Backend error"
+                },
+                ok: false
             }
         }
     } else {
         return {
             status: 400,
             body: {
-                code: 102,
-                message: "Incorrect api key"
+                data: null,
+                error: {
+                    code: 102,
+                    message: "Incorrect api key"
+                },
+                ok: false
             }
         }
     }

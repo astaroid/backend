@@ -27,9 +27,9 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
 
     if (apiKey == VITE_API_KEY) {
         let id = params.id
-        let asset = url.searchParams.get("asset")
-        if (asset) {
-            let query = asset
+        let assets = url.searchParams.get("assets")
+        if (assets) {
+            let query = assets
                 .split(',')
                 .map(asset => asset.toLowerCase().trim())
                 .join(`' or color = '`)
@@ -52,16 +52,24 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                             return {
                                 status: 400,
                                 body: {
-                                    code: 208,
-                                    message: "Asset not found"
-                                } 
+                                    data: null,
+                                    error: {
+                                        code: 208,
+                                        message: "Asset not found"
+                                    },
+                                    ok: false
+                                }
                             }
                         } else if (colorsToMerge.length == 1) {
                             return {
                                 status: 400,
                                 body: {
-                                    code: 210,
-                                    message: "2 or more assets required"
+                                    data: null,
+                                    error: {
+                                        code: 210,
+                                        message: "2 or more assets required"
+                                    },
+                                    ok: false
                                 } 
                             }
                         } else if (colorsToMerge.length > 1) {
@@ -79,7 +87,7 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                                 bought_at: null,
                                 asset_snowflake: uuidV4(),
                             } 
-                            const { data, error } = await supabaseClient
+                            const { data } = await supabaseClient
                                 .rpc("insert_merged_asset", { _user_id: id, _color: mixColor, _merged_asset_metadata: merge_asset_metadata, _parent_color_query: query })
                                 .limit(1)
                                 .single()
@@ -87,14 +95,22 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                             if (data) {
                                 return {
                                     status: 200,
-                                    body: data
+                                    body: {
+                                        data: data.asset,
+                                        error: null,
+                                        ok: true
+                                    }
                                 }
                             } else {
                                 return {
                                     status: 400,
                                     body: {
-                                        code: 104,
-                                        message: "Backend error"
+                                        data: null,
+                                        error: {
+                                            code: 104,
+                                            message: "Backend error"
+                                        },
+                                        ok: false
                                     }
                                 }
                             }
@@ -102,32 +118,48 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                             return {
                                 status: 400,
                                 body: {
-                                    code: 209,
-                                    message: "Assets required"
-                                } 
+                                    data: null,
+                                    error: {
+                                        code: 209,
+                                        message: "Assets required"
+                                    },
+                                    ok: false
+                                }
                             }
                         }
                     } else {
                         return {
                             status: 400,
                             body: {
-                                code: 208,
-                                message: "Asset not found"
+                                data: null,
+                                error: {
+                                    code: 208,
+                                    message: "Asset not found"
+                                },
+                                ok: false
                             } 
                         }
                     }
                 } else {
                     return {
                         status: 400,
-                        body: data.error
+                        body: {
+                            data: null,
+                            error: data.error,
+                            ok: false
+                        }
                     }
                 }
             } else {
                 return {
                     status: 400,
                     body: {
-                        code: 104,
-                        message: "Backend error"
+                        data: null,
+                        error: {
+                            code: 104,
+                            message: "Backend error"
+                        },
+                        ok: false
                     }
                 }
             }
@@ -135,17 +167,25 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
             return {
                 status: 400,
                 body: {
-                    code: 209,
-                    message: "Assets required"
-                } 
+                    data: null,
+                    error: {
+                        code: 209,
+                        message: "Assets required"
+                    },
+                    ok: false
+                }
             }
         }
     } else {
         return {
             status: 400,
             body: {
-                code: 102,
-                message: "Incorrect api key"
+                data: null,
+                error: {
+                    code: 102,
+                    message: "Incorrect api key"
+                },
+                ok: false
             }
         }
     }

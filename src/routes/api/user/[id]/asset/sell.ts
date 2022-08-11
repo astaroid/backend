@@ -13,7 +13,7 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
     if (apiKey == VITE_API_KEY) {
         let id = params.id
         let assetId = url.searchParams.get("asset_id")
-        let soldAt = url.searchParams.get("bought_at") || Temporal.Now.zonedDateTimeISO().toString()
+        let soldAt = url.searchParams.get("sold_at") || Temporal.Now.zonedDateTimeISO().toString()
         if (assetId) {
             const { data } = await supabaseClient
                 .rpc("get_authorize_data", { _user_id: id, _data_request_metadata: { asset_id: assetId, type: "assets_transaction_data" } })
@@ -67,7 +67,7 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                                 _is_seller_asset_created: crystalData.id != String() ? 'true' : 'false',
                                 _seller_notification_metadata: {
                                     create_at: soldAt,
-                                    type: "sold_asset_message",
+                                    type: "SOLD_ASSET_MESSAGE",
                                     message: `<icon:${crystalData.color}-crystal> was sold.`
                                 }
                             }
@@ -78,14 +78,22 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                             if (newCrystal) {
                                 return {
                                     status: 200,
-                                    body: newCrystal
+                                    body: {
+                                        data: newCrystal,
+                                        error: null,
+                                        ok: true
+                                    }
                                 }
                             } else {
                                 return {
                                     status: 400,
                                     body: {
-                                        code: 104,
-                                        message: "Backend error"
+                                        data: null,
+                                        error: {
+                                            code: 104,
+                                            message: "Backend error"
+                                        },
+                                        ok: false
                                     }
                                 }        
                             }
@@ -93,8 +101,12 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                             return {
                                 status: 400,
                                 body: {
-                                    code: 208,
-                                    message: "Asset not found"
+                                    data: null,
+                                    error: {
+                                        code: 208,
+                                        message: "Asset not found"
+                                    },
+                                    ok: false
                                 }
                             }
                         }
@@ -103,23 +115,35 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                         return {
                             status: 400,
                             body: {
-                                code: 208,
-                                message: "Asset not found"
+                                data: null,
+                                error: {
+                                    code: 208,
+                                    message: "Asset not found"
+                                },
+                                ok: false
                             }
                         }
                     }  
                 } else {
                     return {
                         status: 400,
-                        body: data.error
+                        body: {
+                            data: null,
+                            error: data.error,
+                            ok: false
+                        }
                     }
                 }
             } else {
                 return {
                     status: 400,
                     body: {
-                        code: 104,
-                        message: "Backend error"
+                        data: null,
+                        error: {
+                            code: 104,
+                            message: "Backend error"
+                        },
+                        ok: false
                     }
                 }
             }
@@ -127,8 +151,12 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
             return {
                 status: 400,
                 body: {
-                    code: 207,
-                    message: "Asset id required"
+                    data: null,
+                    error: {
+                        code: 207,
+                        message: "Asset id required"
+                    },
+                    ok: false
                 }
             }
         }
@@ -136,8 +164,12 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
         return {
             status: 400,
             body: {
-                code: 102,
-                message: "Incorrect api key"
+                data: null,
+                error: {
+                    code: 102,
+                    message: "Incorrect api key"
+                },
+                ok: false
             }
         }
     }

@@ -70,8 +70,8 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                                     _is_buyer_asset_created: assetData.id != String() ? 'true' : 'false',
                                     _buyer_notification_metadata: {
                                         create_at: boughtAt,
-                                        type: "bought_crystal_message",
-                                        message: `<icon:${crystalData.color}-crystal> was bought for <icon:coin>${oldPrice}.`
+                                        type: "BOUGHT_CRYSTAL_MESSAGE",
+                                        message: `<icon:${crystalData.color}-crystal> was bought for <icon:coin>${crystalData.price}.`
                                     }
                                 }
                                 const { data: newAsset } = await supabaseClient
@@ -79,18 +79,26 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                                     .limit(1)
                                     .single()
                                 if (newAsset) {
-                                    if (rpcBuyCrystalFuncParameter._total_market_cap > 10)
+                                    if (rpcBuyCrystalFuncParameter._total_market_cap < 10)
                                         fetch(`${url.protocol}//${url.host}/api/market?admin_key=${VITE_ADMIN_KEY}`,  { method: "POST" }).catch(null)
                                     return {
                                         status: 200,
-                                        body: newAsset
+                                        body: {
+                                            data: newAsset,
+                                            error: null,
+                                            ok: true
+                                        }
                                     }
                                 } else {
                                     return {
                                         status: 400,
                                         body: {
-                                            code: 104,
-                                            message: "Backend error"
+                                            data: null,
+                                            error: {
+                                                code: 104,
+                                                message: "Backend error"
+                                            },
+                                            ok: false
                                         }
                                     }        
                                 }
@@ -98,8 +106,12 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                                 return {
                                     status: 400,
                                     body: {
-                                        message: "Insufficient coins", 
-                                        code: 206
+                                        data: null,
+                                        error: {
+                                            message: "Insufficient coins", 
+                                            code: 206
+                                        },
+                                        ok: false
                                     }
                                 }
                             }
@@ -107,8 +119,12 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                             return {
                                 status: 400,
                                 body: {
-                                    message: "Crystal not found", 
-                                    code: 212
+                                    data: null,
+                                    error: {
+                                        message: "Crystal not found", 
+                                        code: 212
+                                    },
+                                    ok: false
                                 }
                             }
                         }
@@ -116,23 +132,35 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
                         return {
                             status: 400,
                             body: {
-                                code: 212,
-                                message: "Crystal not found"
+                                data: null,
+                                error: {
+                                    code: 212,
+                                    message: "Crystal not found"
+                                },
+                                ok: false
                             }
                         }
                     }
                 } else {
                     return {
                         status: 400,
-                        body: data.error
+                        body: {
+                            data: null,
+                            error: data.error,
+                            ok: false
+                        }
                     }
                 }
             } else {
                 return {
                     status: 400,
                     body: {
-                        code: 104,
-                        message: "Backend error"
+                        data: null,
+                        error: {
+                            code: 104,
+                            message: "Backend error"
+                        },
+                        ok: false
                     }
                 }
             }
@@ -141,8 +169,12 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
             return {
                 status: 400,
                 body: {
-                    code: 211,
-                    message: "Crystal id required"
+                    data: null,
+                    error: {
+                        code: 211,
+                        message: "Crystal id required"
+                    },
+                    ok: false
                 }
             }
         }
@@ -151,8 +183,12 @@ export async function post({ params, url }:RequestEvent): Promise<RequestHandler
         return {
             status: 400,
             body: {
-                code: 102,
-                message: "Incorrect api key"
+                data: null,
+                error: {
+                    code: 102,
+                    message: "Incorrect api key"
+                },
+                ok: false
             }
         }
     }

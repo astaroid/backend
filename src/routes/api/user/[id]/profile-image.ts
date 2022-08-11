@@ -29,18 +29,43 @@ export async function post({ params, request, url }:RequestEvent): Promise<Reque
                     .from('profile-image')
                     .getPublicUrl(`${id}-profile-image`)
                 if (uploadImageData.data) {
+                    let updateUserProfileImage = await supabaseClient
+                        .from("users")
+                        .update({ profile_image: uploadImageData.data.publicURL })
+                        .eq("id", id)
+                    if (updateUserProfileImage.error) {
+                        return {
+                            status: 400,
+                            body: {
+                                data: null,
+                                error: {
+                                    code: 104,
+                                    message: "Backend error"
+                                },
+                                ok: false
+                            }
+                        }
+                    } 
                     return {
                         status: 200,
                         body: {
-                            imageUrl: uploadImageData.data.publicURL
+                            data: {
+                                "image_url": uploadImageData.data.publicURL
+                            },
+                            error: null,
+                            ok: true
                         }
                     }
                 } else {
                     return {
                         status: 400,
                         body: {
-                            code: 104,
-                            message: "Backend error"
+                            data: null,
+                            error: {
+                                code: 104,
+                                message: "Backend error"
+                            },
+                            ok: false
                         }
                     }
                 }
@@ -48,8 +73,12 @@ export async function post({ params, request, url }:RequestEvent): Promise<Reque
                 return {
                     status: 400,
                     body: {
-                        code: 104,
-                        message: "Backend error"
+                        data: null,
+                        error: {
+                            code: 104,
+                            message: "Backend error"
+                        },
+                        ok: false
                     }
                 }
             }
@@ -57,8 +86,12 @@ export async function post({ params, request, url }:RequestEvent): Promise<Reque
             return {
                 status: 400,
                 body: {
-                    code: 104,
-                    message: "Backend error"
+                    data: null,
+                    error: {
+                        code: 104,
+                        message: "Backend error"
+                    },
+                    ok: false
                 }
             }
         }
@@ -67,8 +100,12 @@ export async function post({ params, request, url }:RequestEvent): Promise<Reque
         return {
             status: 400,
             body: {
-                code: 102,
-                message: "Incorrect api key"
+                data: null,
+                error: {
+                    code: 102,
+                    message: "Incorrect api key"
+                },
+                ok: false
             }
         }
     }
